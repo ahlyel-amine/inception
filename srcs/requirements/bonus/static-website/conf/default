@@ -1,0 +1,6 @@
+server 
+{
+    listen 5484;
+    root /var/www/html/;
+    index index.html;
+}
