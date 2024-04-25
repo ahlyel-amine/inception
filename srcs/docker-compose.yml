@@ -1,0 +1,128 @@
+services:
+  nginx:
+    container_name: nginx
+    image: nginx
+    build: ./requirements/nginx/
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    restart : on-failure
+    volumes:
+      - wp-data-volume:/var/www/html/
+    networks:
+      - inception
+    privileged: true
+
+  ftp-server:
+    container_name: ftp-server
+    image: ftp-server
+    build: ./requirements/bonus/ftp-server
+    volumes:
+      - wp-data-volume:/home/saba/ftp
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    env_file:
+      - .env
+    restart: on-failure
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    privileged: true
+
+  redis:
+    container_name: redis
+    image: redis
+    build: ./requirements/bonus/redis/
+    volumes:
+      - wp-data-volume:/var/www/html
+    restart: on-failure
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    build: ./requirements/mariadb/
+    expose:
+      - 3306
+    volumes:
+      - wp-db-volume:/var/lib/mysql
+    restart : on-failure
+    env_file:
+      - ./.env
+    networks:
+      - inception
+    privileged: true
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress
+    build: ./requirements/wordpress/
+    expose:
+      - 9000
+    depends_on:
+      - mariadb
+    restart : on-failure
+    volumes:
+      - wp-data-volume:/var/www/html/
+    env_file:
+      - ./.env
+    networks:
+      - inception
+    privileged: true
+
+  website:
+    container_name: website
+    build: ./requirements/bonus/static-website/
+    ports:
+      - "80:5484"
+    restart: on-failure
+    networks:
+      - inception
+
+  adminer:
+    container_name: adminer
+    build: ./requirements/bonus/adminer/
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+
+  grafana:
+    container_name: grafana
+    build: ./requirements/bonus/grafana/
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    networks:
+      - inception
+
+volumes:
+  wp-db-volume:
+    name: wp-db-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: bind
+      device: /Users/${USER}/Documents/GitHub/inception/data/db
+
+  wp-data-volume:
+    name: wp-data-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: bind
+      device: /Users/${USER}/Documents/GitHub/inception/data/data
+
+networks:
+  inception:
+    name: inception
+    driver: bridge
