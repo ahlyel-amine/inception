@@ -14,6 +14,24 @@ services:
       - inception
     privileged: true
 
+  ftp-server:
+    container_name: ftp-server
+    image: ftp-server
+    build: ./requirements/bonus/ftp-server
+    volumes:
+      - wp-data-volume:/home/saba/ftp
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    env_file:
+      - .env
+    restart: on-failure
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    privileged: true
+
   redis:
     container_name: redis
     image: redis
@@ -108,19 +126,3 @@ networks:
   inception:
     name: inception
     driver: bridge
-
-
-# ftp-server:
-  #   container_name: ftp-server
-  #   image: ftp-server
-  #   build: ./requirements/bonus/ftp-server
-  #   volumes:
-  #     - wp-data-volume:/ftp
-  #   ports:
-  #     - "20:20"
-  #     - "21:21"
-  #     - "21100-21110:21100-21110"
-  #   restart: on-failure
-  #   networks:
-  #     - inception
-  #   privileged: true

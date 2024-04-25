@@ -15,6 +15,5 @@ window.onload =()=> {
             }
         tabBody.appendChild(row)
     }
-    tab.appendChild(tabBody)
     body.appendChild(tab)
 }

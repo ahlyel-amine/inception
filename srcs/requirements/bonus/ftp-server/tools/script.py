@@ -6,5 +6,7 @@ system("""passwd saba << EOF
 saba
 saba
 """)
-system("echo saba >> /etc/vsftpd.userlist")
+system("mkdir -p /home/saba/ftp")
+system("chown -R saba:saba /home/saba")
+system("echo saba:saba >> /etc/vsftpd.userlist")
 system("vsftpd /etc/vsftpd.conf")
