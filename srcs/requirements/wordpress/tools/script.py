@@ -2,33 +2,63 @@ from os import system, environ
 from re import sub
 import time
 
-time.sleep(10) # waiting for mariadb
+# waiting for mariadb
+time.sleep(10)
 
-fpm_config_file = "/etc/php/7.4/fpm/pool.d/www.conf"
-wp_config_file = f"{environ['CERTS_']}/wp-config.php"
+#constants
+FPM_CONG_FILE = "/etc/php/7.4/fpm/pool.d/www.conf"
+WP_CONF_FILE = f"{environ['CERTS_']}/wp-config.php"
+MYSQL_DB_NAME = environ['MYSQL_DATABASE_NAME']
+MYSQL_USER = environ['MYSQL_USER']
+MYSQL_PASSWORD = environ['MYSQL_PASSWORD']
+MYSQL_HOST = environ['MYSQL_HOST']
+WP_CERT = environ['CERTS_']
+WP_URL = environ['WP_URL']
+WP_TITLE = environ['WP_TITLE']
+WP_ADMIN = environ['WP_ADMIN']
+WP_ADMIN_PSWD = environ['WP_ADMIN_PSWD']
+WP_ADMIN_MAIL = environ['WP_ADMIN_MAIL']
 
+#clone wp config file
+system(f"mv {WP_CERT}/wp-config-sample.php {WP_CONF_FILE}")
+
+
+def replace(targetfile:str, old_values:list[str], new_values:list[str]):
+    """replace old values by new one's in the target file"""
+    with open(targetfile, "r", encoding="utf-8") as f:
+        lol = f.read()
+    for i, value in enumerate(old_values):
+        lol = sub(value, new_values[i], lol)
+    with open(targetfile, "w", encoding="utf-8") as f:
+        f.write(lol)
+
+# start fast-cgi process manager so wordpress can run the php based configuration
 system("service	php7.4-fpm start")
 
-with open(fpm_config_file, "r") as file:
-    data = file.read()
+# configure fast-cgi process manager config file
+replace(FPM_CONG_FILE, ["listen = /run/php/php7.4-fpm.sock"], ["listen = 9000"])
 
-data = sub('listen = /run/php/php7.4-fpm.sock', 'listen = 9000', data)
 
-with open(fpm_config_file, "w") as file:
-    file.write(data)
+# configure wordpress config file
+default_values = ["database_name_here", "username_here", "password_here", "localhost"]
+wp_conf_values = [MYSQL_DB_NAME, MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST]
 
-with open(wp_config_file, "r") as file:
-    data = file.read()
+replace(WP_CONF_FILE, default_values, wp_conf_values)
 
-data = sub('database_name_here', environ['MYSQL_DATABASE_NAME'], data)
-data = sub('username_here', environ['MYSQL_USER'], data)
-data = sub('password_here', environ['MYSQL_PASSWORD'], data)
-data = sub('localhost', environ['MYSQL_HOST'], data)
+#install wordpress
+system(f"""wp core install \
+        --path={WP_CERT} \
+        --url={WP_URL} \
+        --title={WP_TITLE} \
+        --admin_user={WP_ADMIN} \
+        --admin_password={WP_ADMIN_PSWD} \
+        --admin_email={WP_ADMIN_MAIL} \
+        --allow-root""")
+system(f"wp plugin update --all --path={WP_CERT} --allow-root")
 
-with open(wp_config_file, "w") as file:
-    file.write(data)
+# give the wordpress user (www-data) ownership for the wordpress path
+system("chown -R www-data:www-data /var/www/html/")
 
-system(f"wp core install --path={environ['CERTS_']} --url={environ['WP_URL']} --title={environ['WP_TITLE']} --admin_user={environ['WP_ADMIN']} --admin_password={environ['WP_ADMIN_PSWD']} --admin_email={environ['WP_ADMIN_MAIL']} --allow-root")
-system(f"wp plugin update --all --path={environ['CERTS_']} --allow-root")
+# stop the fpm service so we can run it as a main process in the foreground
 system("service php7.4-fpm stop")
-system("/usr/sbin/php-fpm7.4 -F")
+system("php-fpm7.4 -F")

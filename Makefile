@@ -8,5 +8,8 @@ volumes_dir:
 clean:
 	cd srcs/ && docker-compose down --rmi all --volumes && cd ..
 	docker system prune -af
-	rm -rf data/
 
+fclean: clean
+	sudo rm -rf data/
+
+re : fclean default

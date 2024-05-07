@@ -1,22 +1,42 @@
 from os import environ, system, remove
 import  time
 
-system("service mariadb start")
-
-time.sleep(5)
-
-op = f"""
-    CREATE DATABASE IF NOT EXISTS {environ["MYSQL_DATABASE_NAME"]};
-    CREATE USER IF NOT EXISTS '{environ["MYSQL_USER"]}'@'%' IDENTIFIED BY '{environ["MYSQL_PASSWORD"]}';
-    GRANT ALL PRIVILEGES ON {environ["MYSQL_DATABASE_NAME"]}.* TO '{environ["MYSQL_USER"]}'@'%';
-    ALTER USER 'root'@'localhost' IDENTIFIED BY '{environ["MYSQL_PASSWORD"]}';
+# constants
+MARIADB_CONF = "socket                  = /run/mysqld/mysqld.sock\nport                    = 3306\n"
+MARIADB_CONF_FILE = "/etc/mysql/mariadb.conf.d/50-server.cnf"
+MYSQL_DATABASE_NAME = environ["MYSQL_DATABASE_NAME"]
+MYSQL_USER = environ["MYSQL_USER"]
+MYSQL_PASSWORD = environ["MYSQL_PASSWORD"]
+SQL_QUERIES = f"""
+    CREATE DATABASE IF NOT EXISTS {MYSQL_DATABASE_NAME};
+    CREATE USER IF NOT EXISTS '{MYSQL_USER}'@'%' IDENTIFIED BY '{MYSQL_PASSWORD}';
+    GRANT ALL PRIVILEGES ON {MYSQL_DATABASE_NAME}.* TO '{MYSQL_USER}'@'%';
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '{MYSQL_PASSWORD}';
     flush privileges;
 """
+SQL_QUERIES_FILE = "./db.sql"
 
-with open("./db.sql", "w") as file:
-    file.write(op)
 
-system("mariadb -h localhost < db.sql")
-remove("./db.sql")
-system(f"mysqladmin -u root -p{environ['MYSQL_PASSWORD']} shutdown")
+# configure mariaddb server config file
+with open(MARIADB_CONF_FILE, "r", encoding="utf-8") as fl:
+    contents = fl.readlines()
+contents[29] = "bind-address            = 0.0.0.0\n"
+contents.insert(18, MARIADB_CONF)
+with open(MARIADB_CONF_FILE, "w", encoding="utf-8") as fl:
+    fl.writelines(contents)
+
+#create sql queries file
+with open(SQL_QUERIES_FILE, "w", encoding="utf-8") as file:
+    file.write(SQL_QUERIES)
+
+# launch mariadb service
+system("service mariadb start")
+time.sleep(5)
+
+# execute sql queries
+system(f"mariadb -h localhost < {SQL_QUERIES_FILE}")
+remove(SQL_QUERIES_FILE)
+
+# run mariadb deamon
+system(f"mysqladmin -u root -p{MYSQL_PASSWORD} shutdown")
 system("mariadbd")

@@ -1,11 +1,10 @@
-FROM debian:bullseye
+FROM debian:bullseye-slim
 
 RUN apt update -y && apt install nginx openssl python3 -y --no-install-recommends && \
-    apt clean && rm -rf  /var/lib/apt/lists/* && \
-    mkdir -p /etc/nginx/ssl/ && \
-    openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/nginx/ssl/inception.key -out /etc/nginx/ssl/inception.crt -sha256 -days 365 -subj "/C=MA/ST=BeniMellal/L=Khouribga/O=1337/OU=io/CN=inception/"
+    apt clean && rm -rf  /var/lib/apt/lists/*
 
-COPY conf/default etc/nginx/sites-enabled/
+COPY ./tools/script.py /
 
 EXPOSE 443
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+ENTRYPOINT ["python3", "script.py"]
