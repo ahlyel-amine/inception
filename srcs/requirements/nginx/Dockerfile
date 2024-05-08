@@ -4,6 +4,7 @@ RUN apt update -y && apt install nginx openssl python3 -y --no-install-recommend
     apt clean && rm -rf  /var/lib/apt/lists/*
 
 COPY ./tools/script.py /
+COPY ./conf/default /etc/nginx/sites-enabled/
 
 EXPOSE 443
 

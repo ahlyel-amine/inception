@@ -18,23 +18,23 @@ services:
       - ./.env
     privileged: true
 
-  # ftp-server:
-  #   container_name: ftp-server
-  #   image: ftp-server
-  #   build: ./requirements/bonus/ftp-server
-  #   volumes:
-  #     - wp-data-volume:/home/saba/ftp
-  #   ports:
-  #     - "21:21"
-  #     - "21100-21110:21100-21110"
-  #   env_file:
-  #     - .env
-  #   restart: always
-  #   networks:
-  #     - inception
-  #   depends_on:
-  #     - wordpress
-  #   privileged: true
+  vsftpd:
+    container_name: vsftpd
+    image: vsftpd
+    build: ./requirements/bonus/ftp
+    volumes:
+      - wp-data-volume:/home/saba/ftp/
+    ports:
+      - "21:21"
+      - "2000-2024:2000-2024"
+    env_file:
+      - ./.env
+    restart: always
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    privileged: true
 
   # redis:
   #   container_name: redis
@@ -89,16 +89,16 @@ services:
   #   networks:
   #     - inception
 
-  # adminer:
-  #   container_name: adminer
-  #   build: ./requirements/bonus/adminer/
-  #   ports:
-  #     - "8080:8080"
-  #   restart: always
-  #   networks:
-  #     - inception
-  #   depends_on:
-  #     - mariadb
+  adminer:
+    container_name: adminer
+    build: ./requirements/bonus/adminer/
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - inception
+    depends_on:
+      - mariadb
 
   # grafana:
   #   container_name: grafana
@@ -116,7 +116,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: bind
-      device: /home/saba/Documents/GitHub/inception/data/db
+      device: /Users/aahlyel/Documents/GitHub/inception/data/db
 
   wp-data-volume:
     name: wp-data-volume
@@ -124,7 +124,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: bind
-      device: /home/saba/Documents/GitHub/inception/data/data
+      device: /Users/aahlyel/Documents/GitHub/inception/data/data
 
 networks:
   inception:

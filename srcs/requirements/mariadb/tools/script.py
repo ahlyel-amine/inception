@@ -31,11 +31,14 @@ with open(SQL_QUERIES_FILE, "w", encoding="utf-8") as file:
 
 # launch mariadb service
 system("service mariadb start")
-time.sleep(5)
+
 
 # execute sql queries
 system(f"mariadb -h localhost < {SQL_QUERIES_FILE}")
 remove(SQL_QUERIES_FILE)
+
+#remove script
+# remove("/script.py")
 
 # run mariadb deamon
 system(f"mysqladmin -u root -p{MYSQL_PASSWORD} shutdown")

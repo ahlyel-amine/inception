@@ -4,10 +4,9 @@ RUN apt update && apt install -y --no-install-recommends \
     vsftpd openssl python3 && apt clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /etc/ssl/
 
-# COPY ./tools/script.py /
-COPY ./tools/bash.sh /
-RUN chmod +x /bash.sh
+COPY ./tools/script.py /
+COPY ./conf/vsftpd.conf /etc/
 
 EXPOSE 21
 
-ENTRYPOINT ["bash", "bash.sh"]
+ENTRYPOINT ["python3", "script.py"]

@@ -1,4 +1,4 @@
-from os import system, environ
+from os import system, environ, remove
 from re import sub
 import time
 
@@ -20,8 +20,7 @@ WP_ADMIN_PSWD = environ['WP_ADMIN_PSWD']
 WP_ADMIN_MAIL = environ['WP_ADMIN_MAIL']
 
 #clone wp config file
-system(f"mv {WP_CERT}/wp-config-sample.php {WP_CONF_FILE}")
-
+# system(f"mv {WP_CERT}/wp-config-sample.php {WP_CONF_FILE}")
 
 def replace(targetfile:str, old_values:list[str], new_values:list[str]):
     """replace old values by new one's in the target file"""
@@ -55,9 +54,12 @@ system(f"""wp core install \
         --admin_email={WP_ADMIN_MAIL} \
         --allow-root""")
 system(f"wp plugin update --all --path={WP_CERT} --allow-root")
-
+system("wp redis enable --path=/var/www/html  --allow-root")
 # give the wordpress user (www-data) ownership for the wordpress path
 system("chown -R www-data:www-data /var/www/html/")
+
+#remove script
+# remove("/script.py")
 
 # stop the fpm service so we can run it as a main process in the foreground
 system("service php7.4-fpm stop")
