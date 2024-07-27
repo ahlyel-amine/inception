@@ -1,27 +1,38 @@
-# apk update 
-# apk add vsftpd
-# adduser -D -h /home/$FTP_USER -s /sbin/nologin $FTP_USER
-# echo "$FTP_USER:$FTP_PASSWD" | chpasswd
-# mkdir -p /home/$FTP_USER/ftp
-# chown -R $FTP_USER:$FTP_USER /home/$FTP_USER
-# chmod a-w /home/$FTP_USER
-# mv /tmp/vsftpd.conf /etc/vsftpd/
-# sed -i "s/docker_host_ip/$DOCKER_HOST_IP/g" /etc/vsftpd/vsftpd.conf
-# mkdir -p /var/run/vsftpd/empty
-# vsftpd /etc/vsftpd/vsftpd.conf
-from os import system, environ
-system(f"""adduser --disabled-password --home /home/saba --shell /usr/sbin/nologin saba << EOF
-{environ['FTP_USER']}
+from os import system, environ, makedirs
+import subprocess
+# system("service vsftpd start")
+from time import sleep
+
+sleep(15)
+makedirs("/var/run/vsftpd/empty", exist_ok=True)
+makedirs("/var/www/html/", exist_ok=True)
+makedirs("/etc/ssl/certs/", exist_ok=True)
+FTP_USER = environ.get('FTP_USER')
+FTP_PASSWORD = environ.get('FTP_PASSWORD')
+ADDUSER = f"""
+adduser --home /var/www/html/ {environ['FTP_USER']} --disabled-password << EOF
 
 
 
 
-Y
+
+y
 EOF
-""")
-system(f"echo {environ['FTP_USER']}:{environ['FTP_PASSWORD']} | chpasswd ")
-system(f"mkdir -p /home/{environ['FTP_USER']}/ftp")
-system(f"chown -R {environ['FTP_USER']}:{environ['FTP_USER']} /home/{environ['FTP_USER']}")
-system(f"chmod -w /home/{environ['FTP_USER']}")
-system("mkdir -p /var/run/vsftpd/empty")
+"""
+if not system(f"id -u {FTP_USER} > /dev/null 2>&1"):
+    print(f"User '{FTP_USER}' already exists.")
+else:
+    subprocess.run(ADDUSER, shell=True, check=False)
+subprocess.run(f"echo {FTP_USER}:{FTP_PASSWORD} | /usr/sbin/chpasswd", shell=True, check=False)
+subprocess.run(f"chown -R {FTP_USER}:{FTP_USER} /var/www/html/", shell=True, check=False)
+subprocess.run(f"echo {FTP_USER} | tee -a /etc/vsftpd.userlist &> /dev/null", shell=True, check=False)
+subprocess.run(f"adduser {FTP_USER} root", shell=True, check=False)
+
+subprocess.run(f"chmod a-w /var/www/html/", shell=True, check=False)
+system("""openssl req -x509 -newkey rsa:4096 -nodes \
+        -keyout /etc/ssl/certs/inception.key\
+        -out /etc/ssl/certs/inception.crt \
+        -sha256 \
+        -days 365 \
+        -subj '/C=MA/ST=BeniMellal/L=Khouribga/O=1337/OU=io/CN=inception/'""")
 system("vsftpd /etc/vsftpd.conf")

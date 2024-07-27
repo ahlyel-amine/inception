@@ -1,4 +1,5 @@
 from os import system, environ, remove
+import subprocess
 from re import sub
 import time
 
@@ -11,7 +12,7 @@ WP_CONF_FILE = f"{environ['CERTS_']}/wp-config.php"
 MYSQL_DB_NAME = environ['MYSQL_DATABASE_NAME']
 MYSQL_USER = environ['MYSQL_USER']
 MYSQL_PASSWORD = environ['MYSQL_PASSWORD']
-MYSQL_HOST = environ['MYSQL_HOST']
+MYSQL_HOST = "mariadb"
 WP_CERT = environ['CERTS_']
 WP_URL = environ['WP_URL']
 WP_TITLE = environ['WP_TITLE']
@@ -53,14 +54,20 @@ system(f"""wp core install \
         --admin_password={WP_ADMIN_PSWD} \
         --admin_email={WP_ADMIN_MAIL} \
         --allow-root""")
+system(f"wp plugin install redis-cache --activate --path={WP_CERT} --allow-root")
 system(f"wp plugin update --all --path={WP_CERT} --allow-root")
-system("wp redis enable --path=/var/www/html  --allow-root")
+system(f"wp redis enable --path={WP_CERT}  --allow-root")
+# wp plugin update --all --path=/var/www/html --allow-root
+# wp redis enable --path=/var/www/html  --allow-root
 # give the wordpress user (www-data) ownership for the wordpress path
-system("chown -R www-data:www-data /var/www/html/")
+
+system("service php7.4-fpm stop")
+subprocess.run(f"adduser --home /var/www/html {environ['FTP_USER']} --disabled-password", shell=True, check=False)
+# subprocess.run("chown -R www-data:www-data /var/www/html/", shell=True, check=False)
+subprocess.run(f"chown -R {environ['FTP_USER']}:{environ['FTP_USER']} /var/www/html/", shell=True, check=False)
 
 #remove script
 # remove("/script.py")
 
 # stop the fpm service so we can run it as a main process in the foreground
-system("service php7.4-fpm stop")
 system("php-fpm7.4 -F")

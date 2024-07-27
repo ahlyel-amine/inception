@@ -1,6 +1,6 @@
 
 up: volumes_dir
-	cd srcs/ && docker-compose up --build  --remove-orphans && cd .. 
+	cd srcs/ && docker-compose up --build -d && cd .. 
 
 volumes_dir:
 	mkdir -p data/data data/db
@@ -8,6 +8,6 @@ volumes_dir:
 down:
 	cd srcs/ && docker-compose down --rmi all --volumes && cd ..
 	docker system prune -af
-	rm -rf data/
+	sudo rm -rf data/
 
 re : down up

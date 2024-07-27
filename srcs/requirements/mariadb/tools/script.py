@@ -1,45 +1,45 @@
 from os import environ, system, remove
-import  time
-
+import subprocess
+from time import sleep
 # constants
-MARIADB_CONF = "socket                  = /run/mysqld/mysqld.sock\nport                    = 3306\n"
-MARIADB_CONF_FILE = "/etc/mysql/mariadb.conf.d/50-server.cnf"
+system("service mariadb start")
+sleep(5)
+
 MYSQL_DATABASE_NAME = environ["MYSQL_DATABASE_NAME"]
 MYSQL_USER = environ["MYSQL_USER"]
 MYSQL_PASSWORD = environ["MYSQL_PASSWORD"]
+
 SQL_QUERIES = f"""
     CREATE DATABASE IF NOT EXISTS {MYSQL_DATABASE_NAME};
     CREATE USER IF NOT EXISTS '{MYSQL_USER}'@'%' IDENTIFIED BY '{MYSQL_PASSWORD}';
     GRANT ALL PRIVILEGES ON {MYSQL_DATABASE_NAME}.* TO '{MYSQL_USER}'@'%';
-    ALTER USER 'root'@'localhost' IDENTIFIED BY '{MYSQL_PASSWORD}';
-    flush privileges;
+    FLUSH PRIVILEGES;
 """
+
 SQL_QUERIES_FILE = "./db.sql"
+shell_script = f"""
+mysql_secure_installation << EOF 1>&2
+n
+{MYSQL_PASSWORD}
+{MYSQL_PASSWORD}
+y
+n
+n
+n
+n
+EOF
+"""
+subprocess.run(shell_script, shell=True, check=False)
 
-
-# configure mariaddb server config file
-with open(MARIADB_CONF_FILE, "r", encoding="utf-8") as fl:
-    contents = fl.readlines()
-contents[29] = "bind-address            = 0.0.0.0\n"
-contents.insert(18, MARIADB_CONF)
-with open(MARIADB_CONF_FILE, "w", encoding="utf-8") as fl:
-    fl.writelines(contents)
-
-#create sql queries file
+# create sql queries file
 with open(SQL_QUERIES_FILE, "w", encoding="utf-8") as file:
     file.write(SQL_QUERIES)
 
 # launch mariadb service
-system("service mariadb start")
-
-
 # execute sql queries
-system(f"mariadb -h localhost < {SQL_QUERIES_FILE}")
+system(f"mariadb -u root -p{MYSQL_PASSWORD} < {SQL_QUERIES_FILE}")
 remove(SQL_QUERIES_FILE)
 
-#remove script
-# remove("/script.py")
-
 # run mariadb deamon
-system(f"mysqladmin -u root -p{MYSQL_PASSWORD} shutdown")
+system(f"mysqladmin -u root -p{ MYSQL_PASSWORD} shutdown")
 system("mariadbd")

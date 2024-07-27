@@ -3,11 +3,16 @@ server
     listen 443 ssl;
     server_name localhost;
     root /var/www/html/;
-    index index.php index.html index.htm;
+    index index.php;
 
     ssl_certificate /etc/nginx/ssl/inception.crt;
     ssl_certificate_key /etc/nginx/ssl/inception.key;
-    ssl_protocols TLSv1.3;
+    ssl_protocols       TLSv1.2;
+
+    location /adminer {
+        proxy_pass http://adminer:8080;
+        proxy_set_header Host $host;
+    }
 
     location ~ [^/]\\.php(/|$) {
         include fastcgi_params;

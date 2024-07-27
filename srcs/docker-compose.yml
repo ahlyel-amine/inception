@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
   nginx:
     container_name: nginx
@@ -23,10 +21,9 @@ services:
     image: vsftpd
     build: ./requirements/bonus/ftp
     volumes:
-      - wp-data-volume:/home/saba/ftp/
+      - wp-data-volume:/var/www/html/
     ports:
       - "21:21"
-      - "2000-2024:2000-2024"
     env_file:
       - ./.env
     restart: always
@@ -36,17 +33,19 @@ services:
       - wordpress
     privileged: true
 
-  # redis:
-  #   container_name: redis
-  #   image: redis
-  #   build: ./requirements/bonus/redis/
-  #   volumes:
-  #     - wp-data-volume:/var/www/html
-  #   restart: always
-  #   networks:
-  #     - inception
-  #   depends_on:
-  #     - wordpress
+  redis:
+    container_name: redis
+    image: redis
+    build: ./requirements/bonus/redis/
+    volumes:
+      - wp-data-volume:/var/www/html
+    restart: always
+    networks:
+      - inception
+    expose:
+      - 6379
+    depends_on:
+      - wordpress
 
   mariadb:
     container_name: mariadb
@@ -58,7 +57,7 @@ services:
       - wp-db-volume:/var/lib/mysql
     restart : always
     env_file:
-      - ./.env
+      - .env
     networks:
       - inception
     # privileged: true
@@ -80,15 +79,6 @@ services:
       - inception
     privileged: true
 
-  # website:
-  #   container_name: website
-  #   build: ./requirements/bonus/static-website/
-  #   ports:
-  #     - "80:5484"
-  #   restart: always
-  #   networks:
-  #     - inception
-
   adminer:
     container_name: adminer
     build: ./requirements/bonus/adminer/
@@ -100,31 +90,28 @@ services:
     depends_on:
       - mariadb
 
-  # grafana:
-  #   container_name: grafana
-  #   build: ./requirements/bonus/grafana/
-  #   ports:
-  #     - "3000:3000"
-  #   restart: always
-  #   networks:
-  #     - inception
+  static-website:
+    container_name: static-website
+    build: ./requirements/bonus/static-website/
+    ports:
+      - "5484:5484"
+    restart: always
+
+  portainer:
+    container_name: portainer
+    build: ./requirements/bonus/portainer/
+    ports :
+      - "1234:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
 
 volumes:
   wp-db-volume:
     name: wp-db-volume
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: bind
-      device: /Users/aahlyel/Documents/GitHub/inception/data/db
 
   wp-data-volume:
     name: wp-data-volume
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: bind
-      device: /Users/aahlyel/Documents/GitHub/inception/data/data
 
 networks:
   inception:

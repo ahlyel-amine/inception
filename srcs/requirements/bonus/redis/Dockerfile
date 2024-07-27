@@ -4,4 +4,4 @@ RUN apt update && apt install -y redis-server && apt clean && rm -rf /var/lib/ap
 
 COPY ./config/config /etc/redis/redis.conf
 
-ENTRYPOINT [ "redis-server" ]
+ENTRYPOINT [ "redis-server", "--protected-mode", "no"]

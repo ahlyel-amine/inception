@@ -5,7 +5,7 @@ RUN apt update && apt install -y --no-install-recommends \
 RUN mkdir -p /etc/ssl/
 
 COPY ./tools/script.py /
-COPY ./conf/vsftpd.conf /etc/
+COPY ./conf/vsftpd.conf /etc/vsftpd.conf
 
 EXPOSE 21
 
