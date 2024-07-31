@@ -101,7 +101,9 @@ services:
     container_name: portainer
     build: ./requirements/bonus/portainer/
     ports :
-      - "1234:9000"
+      - "2307:2307"
+    env_file:
+      - ./.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
