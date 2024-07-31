@@ -111,9 +111,20 @@ services:
 volumes:
   wp-db-volume:
     name: wp-db-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: bind
+      device: /tmp/data/db
 
   wp-data-volume:
     name: wp-data-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: bind
+      device: /tmp/data/data
+
 
 networks:
   inception:

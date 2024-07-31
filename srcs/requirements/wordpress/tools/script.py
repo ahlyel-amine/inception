@@ -56,18 +56,17 @@ system(f"""wp core install \
         --allow-root""")
 system(f"wp plugin install redis-cache --activate --path={WP_CERT} --allow-root")
 system(f"wp plugin update --all --path={WP_CERT} --allow-root")
+#install redis plugin
 system(f"wp redis enable --path={WP_CERT}  --allow-root")
-# wp plugin update --all --path=/var/www/html --allow-root
-# wp redis enable --path=/var/www/html  --allow-root
-# give the wordpress user (www-data) ownership for the wordpress path
+#install a theme
+system(f"wp theme install blockstarter --activate --path={WP_CERT} --allow-root")
 
 system("service php7.4-fpm stop")
 subprocess.run(f"adduser --home /var/www/html {environ['FTP_USER']} --disabled-password", shell=True, check=False)
-# subprocess.run("chown -R www-data:www-data /var/www/html/", shell=True, check=False)
 subprocess.run(f"chown -R {environ['FTP_USER']}:{environ['FTP_USER']} /var/www/html/", shell=True, check=False)
 
 #remove script
-# remove("/script.py")
+remove("/script.py")
 
 # stop the fpm service so we can run it as a main process in the foreground
 system("php-fpm7.4 -F")

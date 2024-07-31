@@ -9,11 +9,6 @@ server
     ssl_certificate_key /etc/nginx/ssl/inception.key;
     ssl_protocols       TLSv1.2;
 
-    location /adminer {
-        proxy_pass http://adminer:8080;
-        proxy_set_header Host $host;
-    }
-
     location ~ [^/]\\.php(/|$) {
         include fastcgi_params;
         fastcgi_pass wordpress:9000;
