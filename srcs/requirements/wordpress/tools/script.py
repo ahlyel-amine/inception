@@ -1,4 +1,4 @@
-from os import system, environ, remove
+from os import system, environ
 import subprocess
 from re import sub
 import time
@@ -19,9 +19,6 @@ WP_TITLE = environ['WP_TITLE']
 WP_ADMIN = environ['WP_ADMIN']
 WP_ADMIN_PSWD = environ['WP_ADMIN_PSWD']
 WP_ADMIN_MAIL = environ['WP_ADMIN_MAIL']
-
-#clone wp config file
-# system(f"mv {WP_CERT}/wp-config-sample.php {WP_CONF_FILE}")
 
 def replace(targetfile:str, old_values:list[str], new_values:list[str]):
     """replace old values by new one's in the target file"""
@@ -61,12 +58,9 @@ system(f"wp redis enable --path={WP_CERT}  --allow-root")
 #install a theme
 system(f"wp theme install blockstarter --activate --path={WP_CERT} --allow-root")
 
-system("service php7.4-fpm stop")
-subprocess.run(f"adduser --home /var/www/html {environ['FTP_USER']} --disabled-password", shell=True, check=False)
-subprocess.run(f"chown -R {environ['FTP_USER']}:{environ['FTP_USER']} /var/www/html/", shell=True, check=False)
+subprocess.run(f"chown -R www-data:www-data /var/www/html", shell=True, check=False)
 
-#remove script
-remove("/script.py")
+system("service php7.4-fpm stop")
 
 # stop the fpm service so we can run it as a main process in the foreground
 system("php-fpm7.4 -F")

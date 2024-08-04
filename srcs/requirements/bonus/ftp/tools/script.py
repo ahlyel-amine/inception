@@ -24,11 +24,10 @@ if not system(f"id -u {FTP_USER} > /dev/null 2>&1"):
 else:
     subprocess.run(ADDUSER, shell=True, check=False)
 subprocess.run(f"echo {FTP_USER}:{FTP_PASSWORD} | /usr/sbin/chpasswd", shell=True, check=False)
-subprocess.run(f"chown -R {FTP_USER}:{FTP_USER} /var/www/html/", shell=True, check=False)
+
 subprocess.run(f"echo {FTP_USER} | tee -a /etc/vsftpd.userlist &> /dev/null", shell=True, check=False)
 subprocess.run(f"adduser {FTP_USER} root", shell=True, check=False)
 
-subprocess.run(f"chmod a-w /var/www/html/", shell=True, check=False)
 system("""openssl req -x509 -newkey rsa:4096 -nodes \
         -keyout /etc/ssl/certs/inception.key\
         -out /etc/ssl/certs/inception.crt \

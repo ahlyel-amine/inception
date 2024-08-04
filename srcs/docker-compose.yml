@@ -1,7 +1,7 @@
 services:
   nginx:
     container_name: nginx
-    image: nginx
+    image: nginx:saba
     build: ./requirements/nginx/
     ports:
       - "443:443"
@@ -18,7 +18,7 @@ services:
 
   vsftpd:
     container_name: vsftpd
-    image: vsftpd
+    image: vsftpd:saba
     build: ./requirements/bonus/ftp
     volumes:
       - wp-data-volume:/var/www/html/
@@ -35,7 +35,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis
+    image: redis:saba
     build: ./requirements/bonus/redis/
     volumes:
       - wp-data-volume:/var/www/html
@@ -49,7 +49,7 @@ services:
 
   mariadb:
     container_name: mariadb
-    image: mariadb
+    image: mariadb:saba
     build: ./requirements/mariadb/
     expose:
       - 3306
@@ -64,7 +64,7 @@ services:
 
   wordpress:
     container_name: wordpress
-    image: wordpress
+    image: wordpress:saba
     build: ./requirements/wordpress/
     expose:
       - 9000
@@ -81,6 +81,7 @@ services:
 
   adminer:
     container_name: adminer
+    image: adminer:saba
     build: ./requirements/bonus/adminer/
     ports:
       - "8080:8080"
@@ -92,6 +93,7 @@ services:
 
   static-website:
     container_name: static-website
+    image: static:saba-website
     build: ./requirements/bonus/static-website/
     ports:
       - "5484:5484"
@@ -99,6 +101,7 @@ services:
 
   portainer:
     container_name: portainer
+    image: portainer:saba
     build: ./requirements/bonus/portainer/
     ports :
       - "2307:2307"
@@ -115,7 +118,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: bind
-      device: /tmp/data/db
+      device: /home/aahlyel/data/db
 
   wp-data-volume:
     name: wp-data-volume
@@ -123,7 +126,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: bind
-      device: /tmp/data/data
+      device: /home/aahlyel/data/data
 
 
 networks:
