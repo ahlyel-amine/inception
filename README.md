@@ -27,7 +27,12 @@ Today, virtualization is a standard practice in enterprise IT architecture. It i
 ## From chroot to container
 - During the development of Unix V7 in 1979, the chroot system call was introduced, changing the root directory of a process and its children to a new location in the filesystem. This advance was the beginning of process isolation: segregating file access for each process.
 
-
+**revolution:**
+Chroot introduced process isolation, allowing changes to the root directory of processes.
+FreeBSD Jails enabled partitioning systems into isolated environments with individual IP addresses.
+Linux VServer provided operating system-level virtualization for resource partitioning.
+Process Containers evolved into cgroups for resource management and isolation in Linux.
+Docker popularized containerization with an ecosystem for container management.
 # Containers
 ## **Container overview**
 
