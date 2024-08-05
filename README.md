@@ -72,7 +72,7 @@ Docker popularized containerization with an ecosystem for container management.
 ## Containers
 
 
-<div align="center"><img align="center" width="500" height="300" src="imgs/Linux-Container-Architecture-1.jpeg"></div>
+<div align="center" width="100%" ><img align="left" src="imgs/Linux-Container-Architecture-1.jpeg"></div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
  **Container overview**
 
@@ -119,8 +119,11 @@ Network Bandwidth Management: Cgroups can also limit the network bandwidth avail
 Provides fine-grained control over process privileges, allowing containers to run with only the necessary privileges.
 
 ---
-
 ## Diff between hypervisor and namspaces
+
+<img width="auto" height="auto" src="imgs/vm_vs_containers.jpg">
+
+
 | Feature                | Hypervisor                                         | Namespace                                        |
 |------------------------|----------------------------------------------------|--------------------------------------------------|
 | **Definition**         | Software that creates and runs virtual machines   | Linux kernel feature for isolating resources    |
@@ -135,9 +138,12 @@ Provides fine-grained control over process privileges, allowing containers to ru
 | **Overhead**           | Higher (requires full OS for each VM)              | Lower (shares host OS and resources)            |
 
 
+
 In summary, hypervisors provide full virtualization with separate guest operating systems, while namespaces offer process-level isolation within a single host OS, making them suitable for different use cases and providing different types of resource management and isolation.
+
 ---
 ## Container Vs VMs 
+
 
 | Feature                | Containers                                    | Virtual Machines                              |
 |------------------------|-----------------------------------------------|-----------------------------------------------|
@@ -155,12 +161,11 @@ In summary, hypervisors provide full virtualization with separate guest operatin
 | **Networking**         | Uses host network or overlay networks         | Virtual network interfaces                    |
 | **Examples**           | Docker, Kubernetes, LXC                       | VMware, Hyper-V, KVM                          |
 
-<div align="center"><img align="center" width="400" height="200" src="imgs/vm_vs_containers.jpg"></div>
 
 ---
 ## Introduction to Docker
 
-<div align="center"><img align="center" width="400" height="200" src="imgs/Architecture-of-Docker.png"></div>
+<div align="left"><img  src="imgs/Architecture-of-Docker.png"></div>
 Docker is a platform that revolutionizes how applications are developed, deployed, and run by leveraging containerization technology. Containers encapsulate an application and its dependencies into a single, portable unit, ensuring consistent performance across different environments. Docker simplifies the process of creating, deploying, and managing containers, making it easier to develop, ship, and run applications reliably.
 
 ### What Docker Offers
@@ -190,6 +195,9 @@ Docker builds upon the fundamental concepts of containerization and introduces s
 ---
 ### Docker vs. Containerization Methods Before Docker
 
+<div align="left"><img height="500" src="imgs/Docker-Workflow.jpeg"></div>
+
+
 | Feature                | Docker                                             | Pre-Docker Containerization Methods                    |
 |------------------------|----------------------------------------------------|--------------------------------------------------------|
 | **Ease of Use**        | Intuitive CLI and GUI tools                       | More manual setup and management                      |
@@ -202,11 +210,10 @@ Docker builds upon the fundamental concepts of containerization and introduces s
 
 
 
-Sure! Here’s the revised content with the Docker ecosystem described in text and key Docker technologies presented in a table:
-
 ---
 
 ## Docker Ecosystem
+
 
 Docker provides a comprehensive ecosystem to simplify container management and application development. Here’s an overview:
 
@@ -222,7 +229,7 @@ Docker provides a comprehensive ecosystem to simplify container management and a
 ---
 ## Key Docker Technologies
 
-<div align="center"><img align="center" width="350" height="350" src="imgs/Docker-Execution-Environment.jpeg"></div>
+<div align="left"><img width="490" src="imgs/Docker-Execution-Environment.jpeg"></div>
 
 
 | **Technology**       | **Description**                                                                                         |
@@ -368,8 +375,8 @@ volumes:
 
 ### Docker Volumes
 
-<div align="center"><img align="center" width="500" height="200" src="imgs/Docker-Storage.jpeg"></div>
-
+<div ><img align="center" src="imgs/Docker-Storage.jpeg"></div>
+<br>
 Docker volumes are used to persist data generated and used by Docker containers. Volumes are stored outside the container filesystem, making them a better choice than using bind mounts for sharing data among multiple containers and persisting data beyond the lifecycle of a container.
 
 #### **Types of Docker Volumes**
