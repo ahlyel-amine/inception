@@ -17,8 +17,18 @@
 
 <!-- curl --ftp-ssl -k -u sabat ftp://vsftpd/ -->
 ---
-# Containers
+# Virtualization
 
+Virtualization uses software to create an abstraction layer over computer hardware, enabling the division of a single computer's hardware components—such as processors, memory and storage—into multiple virtual machines (VMs). Each VM runs its own operating system (OS) and behaves like an independent computer, even though it is running on just a portion of the actual underlying computer hardware.
+
+It follows that virtualization enables more efficient use of physical computer hardware and allows a greater return on an organization’s hardware investment.
+
+Today, virtualization is a standard practice in enterprise IT architecture. It is also the technology that drives cloud computing economics. Virtualization enables cloud providers to serve users with their existing physical computer hardware. It enables cloud users to purchase only the computing resources they need when they need it, and to scale those resources cost-effectively as their workloads grow.
+## From chroot to container
+- During the development of Unix V7 in 1979, the chroot system call was introduced, changing the root directory of a process and its children to a new location in the filesystem. This advance was the beginning of process isolation: segregating file access for each process.
+
+
+# Containers
 ## **Container overview**
 
 Containers are packages of software that contain all of the necessary elements to run in any environment. In this way, containers virtualize the operating system and run anywhere, from a private data center to the public cloud or even on a developer’s personal laptop. 
@@ -65,3 +75,4 @@ So, while both hypervisors and namespaces are used to create isolated environmen
 
 # resources
 - [Use containers to Build, Share and Run your applications](https://www.docker.com/resources/what-container/)
+- [What is virtualization?](https://www.ibm.com/topics/virtualization)
